@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import com.capgemini.addressbookapp.dto.PersonDTO;
 
-@Entity
+@Entity(name="PERSON")
 @Table(name = "ADDRESS_BOOK")
 public class Person {
 	@Id
@@ -18,6 +18,9 @@ public class Person {
 	private String state;
 	private String zipCode;
 	private String phoneNumber;
+	public Person() {
+		
+	}
 	public Person(int id, PersonDTO personDTO){
 		this.id = id;
 		this.firstName = personDTO.getFirstName();
@@ -27,6 +30,12 @@ public class Person {
 		this.state = personDTO.getState();
 		this.zipCode = personDTO.getZipCode();
 		this.phoneNumber = personDTO.getPhoneNumber();
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	public String getFirstName() {
 		return firstName;

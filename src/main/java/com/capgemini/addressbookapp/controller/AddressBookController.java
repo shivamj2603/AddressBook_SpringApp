@@ -1,8 +1,6 @@
 package com.capgemini.addressbookapp.controller;
 import java.util.List;
-
 import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,29 +12,46 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.capgemini.addressbookapp.dto.PersonDTO;
+import com.capgemini.addressbookapp.dto.ResponseDTO;
+import com.capgemini.addressbookapp.model.Person;
+import com.capgemini.addressbookapp.service.IPersonService;
 
 @RestController
 @RequestMapping("/addressbook")
 public class AddressBookController {
+	@Autowired
+	private IPersonService personService;
 	
 	@GetMapping(value={"/get", "/", ""})
-	public ResponseEntity<String> getAllContacts(){
-		return new ResponseEntity<String>("Get call for all contacts succeeded", HttpStatus.OK);
+	public ResponseEntity<ResponseDTO> getAllContacts(){
+		List<Person> contactList = personService.getAllContacts();
+		ResponseDTO respDTO = new ResponseDTO("List of all Contacts : ", contactList);
+		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
-	@GetMapping("/get/{Id}")
-	public ResponseEntity<String> getContactById(@PathVariable("Id") int Id){
-		return new ResponseEntity<String>("Get call for Id : " + Id , HttpStatus.OK);
+	@GetMapping("/get/{id}")
+	public ResponseEntity<ResponseDTO> getContactById(@PathVariable("Id") int id){
+		Person person = personService.getContactById(id);
+		ResponseDTO respDTO = new ResponseDTO("Contact id : " + id, person);
+		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
 	@PostMapping("/create")
-	public ResponseEntity<String> addContact(){
-		return new ResponseEntity<String>("Post call executed: ", HttpStatus.OK);
+	public ResponseEntity<ResponseDTO> addContact(@RequestBody PersonDTO personDTO){
+		Person person = personService.addPerson(personDTO);
+		ResponseDTO respDTO = new ResponseDTO("Contact added with id : " + person.getId(), person);
+		
+		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
-	@PutMapping("/update/{Id}")
-	public ResponseEntity<String> updateContact(@PathVariable int Id){
-		return new ResponseEntity<String>("Update call for Id : " + Id, HttpStatus.OK);
+	@PutMapping("/update/{id}")
+	public ResponseEntity<ResponseDTO> updateContact(@PathVariable int id, @RequestBody PersonDTO personDTO){
+		Person person = personService.updatePersonById(id, personDTO);
+		ResponseDTO respDTO = new ResponseDTO("Updated Contact with id : " + id, person);
+		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
-	@DeleteMapping("/delete/{Id}")
-	public ResponseEntity<String> deleteContactById(@PathVariable int Id){
-		return new ResponseEntity<String>("Delete call executed for Id : " + Id, HttpStatus.OK);
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<ResponseDTO> deleteContactById(@PathVariable int id){
+		personService.deletePersonById(id);
+		ResponseDTO respDTO = new ResponseDTO("Deleted Contact with id : ", id);
+		return new ResponseEntity<ResponseDTO>(respDTO, HttpStatus.OK);
 	}
 }
